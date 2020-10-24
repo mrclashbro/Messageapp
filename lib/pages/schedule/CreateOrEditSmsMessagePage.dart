@@ -90,6 +90,7 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue[200],
       appBar: AppBar(
         title: Text((widget.messageMode == MessageMode.edit ? 'Edit' : 'Create New') + ' Message'),
       ),

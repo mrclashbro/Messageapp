@@ -50,6 +50,7 @@ class _SettingsPage extends State<SettingsPage> {
           final Settings settings = snapshot.data;
 
           return Scaffold(
+            backgroundColor: Colors.blue[100],
             appBar: AppBar(
               title: Text('Settings'),
               leading: GestureDetector(
@@ -107,6 +108,7 @@ class _SettingsPage extends State<SettingsPage> {
     ];
 
     return Card(
+      color: Colors.blue[200],
       child: Column(
         children: _children..addAll(children)
       ),
@@ -142,7 +144,7 @@ class _SettingsPage extends State<SettingsPage> {
         title: Text('Enable Notifications'),
         subtitle: Text('App wide notifications.'),
         trailing: CupertinoSwitch(
-          activeColor: Colors.brown,
+          activeColor: Colors.blue,
           value: settings.system.shouldShowNotifications,
           onChanged: (bool value){
             settings.system.shouldShowNotifications = value;
@@ -152,11 +154,11 @@ class _SettingsPage extends State<SettingsPage> {
       ),
       
       ListTile(
-        title: Text('Success Notifications'),
-        subtitle: Text('Message sending successful notifications.'),
+        title: Text('Successful Notifications'),
+        subtitle: Text('Notifies when the message sent successfully'),
         enabled: settings.system.shouldShowNotifications,
         trailing: CupertinoSwitch(
-          activeColor: settings.system.shouldShowNotifications ? Colors.brown : Colors.grey,
+          activeColor: settings.system.shouldShowNotifications ? Colors.blue : Colors.grey,
           value: settings.system.shouldShowMessageSentNotifications,
           dragStartBehavior: DragStartBehavior.start,
           onChanged: !settings.system.shouldShowNotifications ? null :
@@ -169,10 +171,10 @@ class _SettingsPage extends State<SettingsPage> {
 
       ListTile(
         title: Text('Failed Notifications'),
-        subtitle: Text('Message sending failed notifications.'),
+        subtitle: Text('Notifies when the message sending failed'),
         enabled: settings.system.shouldShowNotifications,
         trailing: CupertinoSwitch(
-          activeColor: settings.system.shouldShowNotifications ? Colors.brown : Colors.grey,
+          activeColor: settings.system.shouldShowNotifications ? Colors.blue : Colors.grey,
           value: settings.system.shouldShowMessageFailedNotifications,
           dragStartBehavior: DragStartBehavior.start,
           onChanged: !settings.system.shouldShowNotifications ? null :

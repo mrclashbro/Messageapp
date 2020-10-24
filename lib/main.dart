@@ -52,6 +52,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return MaterialApp(
       title: _appName,
       theme: ThemeData(
+        backgroundColor: Colors.blue[300],
         primarySwatch: Colors.blue,
         accentColor: Colors.indigo[900],
       ),

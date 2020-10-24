@@ -87,6 +87,7 @@ class _ViewMessageState extends State<ViewMessage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue[200],
       appBar: _buildAppBar(context),
 
       body: ListView(
@@ -94,7 +95,9 @@ class _ViewMessageState extends State<ViewMessage> {
           Padding(
             padding: EdgeInsets.all(16.0),
             child: Card(
+              color: Colors.blue[300],
               child: Column(
+                
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -157,12 +160,12 @@ class _ViewMessageState extends State<ViewMessage> {
             padding: EdgeInsets.only(left: 25.0, right: 20.0, top: 8.0, bottom: 8.0),
             child: Row(
               children: <Widget>[
-                Icon(Icons.person, size: 35.0, color: Colors.deepOrange),
+                Icon(Icons.person, size: 35.0, color: Colors.blue[900]),
                 Flexible(
                   fit: FlexFit.tight,
                   flex: 1,
                   child: Card(
-                    color: Colors.brown,
+                    color: Colors.blue[300],
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 2.0),
                       child: Column(

@@ -43,7 +43,7 @@ class _AppDrawerState extends State<AppDrawer> {
               title: Text('Settings', style: _textStyle),
               onTap: () => _openPage(SettingsPage()),
             ),
-            Divider(color: Colors.white),
+            Divider(color: Colors.blue),
             ListTile(
               leading: Icon(Icons.info, size: _iconSize, color: _iconColor),
               title: Text('About', style: _textStyle),

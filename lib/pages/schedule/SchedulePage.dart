@@ -138,6 +138,7 @@ class _SchedulePageState extends State<SchedulePage> with SingleTickerProviderSt
         )
       ),
    //   drawer: AppDrawer(),
+   backgroundColor: Colors.blue[200],
       body: StreamBuilder<List<Message>>(
         stream: _messageBloc.stream,
         initialData: null,
@@ -151,6 +152,7 @@ class _SchedulePageState extends State<SchedulePage> with SingleTickerProviderSt
           _messages = snapshot.data;  // take all messages.
 
           return TabBarView(
+            
             controller: _tabController,
             children: <Widget>[
               Schedule(all, () => _refreshMessages()),

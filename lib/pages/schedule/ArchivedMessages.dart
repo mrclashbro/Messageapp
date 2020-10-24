@@ -15,6 +15,7 @@ class _ArchivedMessagesState extends State<ArchivedMessages> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+     
       appBar: AppBar(
         title: Text("Archived Messages"),
       ),
