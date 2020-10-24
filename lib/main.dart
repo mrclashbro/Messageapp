@@ -4,19 +4,19 @@ import 'package:message_app/providers/MessageProvider.dart';
 
 import 'pages/schedule/SchedulePage.dart';
 
-
-
 void main() => runApp(MyApp());
 
 
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
+
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
-  final String _appName = 'MsgSchedule';
+  final String _appName = 'Msg scheduler';
   Widget _home;
+
 
   _MyAppState();
 
@@ -43,6 +43,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return true;
   }
 
+ 
+
   
 
   @override
@@ -50,10 +52,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return MaterialApp(
       title: _appName,
       theme: ThemeData(
-        primarySwatch: Colors.brown,
-        accentColor: Colors.orange,
+        primarySwatch: Colors.blue,
+        accentColor: Colors.indigo[900],
       ),
       home: _home,
+
     );
   }
 }

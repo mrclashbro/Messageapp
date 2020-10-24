@@ -64,7 +64,7 @@ class _ViewMessageState extends State<ViewMessage> {
               await DialogProvider.showConfirmation(
                 context: context,
                 title: Text('Delete Message'),
-                content: Text('Really delete message forever?'),
+                content: Text('Are you really want to delete this message?'),
                 onYes: () async {
                   if (await MessageProvider.getInstance().removeMessage(_message.id))
                     Navigator.pop(context);

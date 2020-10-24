@@ -63,7 +63,7 @@ class _SettingsPage extends State<SettingsPage> {
                     DialogProvider.showConfirmation(
                       context: context,
                       title: Icon(Icons.restore),
-                      content: Text('Really set settings to default?'),
+                      content: Text('Do you need to  set settings to default?'),
                       onYes: () => _settingsBloc.updateSettings(SettingsProvider.getDefaultSettings())
                     );
                   },
@@ -187,8 +187,8 @@ class _SettingsPage extends State<SettingsPage> {
   Widget _smsSettings(Settings settings) {
     return _settingsGroup('SMS', [
       ListTile(
-        title: Text('Max Smses Per Message'),
-        subtitle: Text('The maximum number of smses that can be sent per single sms schedule.'),
+        title: Text('Max messages Per Message'),
+        subtitle: Text('The maximum number of messages that can be sent per single sms schedule.'),
         trailing: DropdownButton<int>(
           value: settings.sms.maxSmsCount,
           items: <int>[1, 2, 3, 4,]
@@ -206,8 +206,8 @@ class _SettingsPage extends State<SettingsPage> {
       ),
 
       ListTile(
-        title: Text('Primary Sim Card'),
-        subtitle: Text('The sim card to use when sending smses.'),
+        title: Text('Select sim card'),
+        subtitle: Text('The sim card to use when sending messages.'),
         trailing: DropdownButton<SimCards>(
           value: settings.sms.simcard,
           items: _simcards.map((SimCard simcard) =>

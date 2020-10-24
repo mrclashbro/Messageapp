@@ -109,14 +109,14 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
                 hintText: 'Phone Number',
                 labelText: 'Phone Number',
                 errorText: _phoneNumberError,
-                icon: Icon(Icons.contact_phone),
+                icon: Icon(Icons.contact_phone_outlined),
                 suffixIcon: GestureDetector(
                   onTap: () async {
                     final Contact contact = await _contactPicker.selectContact();
                    // String number
                     setState(() => _phoneNumberCtrl.text = contact.phoneNumber.number.toString());
                   },
-                  child: Icon(Icons.person_add)
+                  child: Icon(Icons.person_add_alt)
                 )
               ),
             ),
@@ -129,7 +129,7 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
               decoration: InputDecoration(
                 errorText: _messageError,
                 labelText: 'Message',
-                icon: Icon(Icons.textsms)
+                icon: Icon(Icons.sms_sharp)
               ),
             ),
             
@@ -142,9 +142,9 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
               decoration: InputDecoration(
                 labelText: 'Date',
                 errorText: _dateError,
-                icon: Icon(Icons.calendar_today),
+                icon: Icon(Icons.calendar_today_sharp),
                 suffixIcon: GestureDetector(
-                  child: Icon(Icons.more_horiz),
+                  child: Icon(Icons.more_sharp),
                   onTap: () async {
                     final DateTime date = await showDatePicker(
                       context: context,
@@ -162,6 +162,7 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
             ),
 
             TextFormField(
+              
               controller: _timeCtrl,
               inputFormatters: [
                 BlacklistingTextInputFormatter(RegExp(r".*"))
@@ -176,7 +177,7 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
                   onTap: () async {
                     final TimeOfDay time = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.fromDateTime(DateTime.now().add(Duration(minutes: 2)))
+                      initialTime: TimeOfDay.fromDateTime(DateTime.now().add(Duration(minutes: 0)))
                     );
                     _time = time;
                     setState(() {
@@ -196,7 +197,7 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
           color: Colors.white
         ),
         onPressed: !_validate() ? null : () => widget.messageMode == MessageMode.edit ? _onEditMessage() : _onCreateMessage(),
-        backgroundColor: _validate() ? Colors.deepOrange : Colors.grey,
+        backgroundColor: _validate() ? Colors.blueAccent : Colors.grey,
       ),
     );
   }

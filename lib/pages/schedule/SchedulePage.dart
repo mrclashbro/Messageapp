@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
@@ -132,9 +130,9 @@ class _SchedulePageState extends State<SchedulePage> with SingleTickerProviderSt
           unselectedLabelColor: Colors.white,
           controller: _tabController,
           tabs: const <Widget>[
-            Tab(icon: Icon(Icons.all_inclusive, size: _iconSize)),
+            Tab(icon: Icon(Icons.all_inbox, size: _iconSize)),
             Tab(icon: Icon(Icons.schedule, size:_iconSize)),
-            Tab(icon: Icon(Icons.done, size:_iconSize)),
+            Tab(icon: Icon(Icons.mark_chat_read , size:_iconSize)),
             Tab(icon: Icon(Icons.error, size:_iconSize)),
           ],
         )
@@ -166,7 +164,7 @@ class _SchedulePageState extends State<SchedulePage> with SingleTickerProviderSt
       floatingActionButton: FloatingActionButton(
         onPressed: _onCreateMessage,
         child: Icon(Icons.add, color: Colors.white),
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: Colors.blue,
       ),
     );
   }
@@ -176,7 +174,7 @@ class _SchedulePageState extends State<SchedulePage> with SingleTickerProviderSt
       case PopUpMenuValues.deleteAll:
         DialogProvider.showConfirmation(
           title: Icon(Icons.delete_forever),
-          content: Text('Really delete all messages forever?'),
+          content: Text('Are you sure delete all messages?'),
           context: context,
           onYes: (){
             _messageBloc.deleteAllMessages();
