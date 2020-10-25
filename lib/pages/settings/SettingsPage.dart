@@ -1,4 +1,3 @@
-
 import 'package:message_app/providers/SettingsProvider.dart';
 import 'package:sms/sms.dart';
 
@@ -9,15 +8,12 @@ import 'package:message_app/blocs/SettingsBloc.dart';
 import 'package:message_app/models/Settings.dart';
 import 'package:message_app/providers/DialogProvider.dart';
 
-
 class SettingsPage extends StatefulWidget {
-
   @override
   _SettingsPage createState() => _SettingsPage();
 }
 
 class _SettingsPage extends State<SettingsPage> {
-
   final _settingsBloc = SettingsBloc();
   List<SimCard> _simcards;
 
@@ -40,61 +36,58 @@ class _SettingsPage extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    return
-      StreamBuilder<Settings>(
+    return StreamBuilder<Settings>(
         initialData: null,
         stream: _settingsBloc.stream,
         builder: (BuildContext context, AsyncSnapshot<Settings> snapshot) {
-
           final Settings settings = snapshot.data;
 
           return Scaffold(
-            backgroundColor: Colors.blue[100],
-            appBar: AppBar(
-              title: Text('Settings'),
-              leading: GestureDetector(
-                child: Icon(Icons.arrow_back),
-                onTap: () => Navigator.pop(context),
-              ),
-              actions: <Widget>[
-                PopupMenuButton<PopUpMenuValues>(
-                  tooltip: '',
-                  onSelected: (PopUpMenuValues value){
-                    DialogProvider.showConfirmation(
-                      context: context,
-                      title: Icon(Icons.restore),
-                      content: Text('Do you need to  set settings to default?'),
-                      onYes: () => _settingsBloc.updateSettings(SettingsProvider.getDefaultSettings())
-                    );
-                  },
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry<PopUpMenuValues>>[
-                    const PopupMenuItem<PopUpMenuValues>(
-                      value: PopUpMenuValues.defaultSettings,
-                      child: ListTile(
-                        leading: Icon(Icons.restore),
-                        title: Text('Set to default settings')
+              backgroundColor: Colors.grey[100],
+              appBar: AppBar(
+                title: Text('Settings'),
+                leading: GestureDetector(
+                  child: Icon(Icons.arrow_back),
+                  onTap: () => Navigator.pop(context),
+                ),
+                actions: <Widget>[
+                  PopupMenuButton<PopUpMenuValues>(
+                    tooltip: '',
+                    onSelected: (PopUpMenuValues value) {
+                      DialogProvider.showConfirmation(
+                          context: context,
+                          title: Icon(Icons.restore),
+                          content:
+                              Text('Do you need to  set settings to default?'),
+                          onYes: () => _settingsBloc.updateSettings(
+                              SettingsProvider.getDefaultSettings()));
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<PopUpMenuValues>>[
+                      const PopupMenuItem<PopUpMenuValues>(
+                        value: PopUpMenuValues.defaultSettings,
+                        child: ListTile(
+                            leading: Icon(Icons.restore),
+                            title: Text('Set to default settings')),
                       ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-            body: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: snapshot.hasData ? ListView(
-                children: <Widget>[
-                  _notificationSettings(settings),
-                  _messageSettings(settings),
-                  _smsSettings(settings)
+                    ],
+                  )
                 ],
-              ) : Center(
-                child: CircularProgressIndicator(),
-              )
-            )
-          );
-        }
-      );
+              ),
+              body: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: snapshot.hasData
+                      ? ListView(
+                          children: <Widget>[
+                            _notificationSettings(settings),
+                            _messageSettings(settings),
+                            _smsSettings(settings)
+                          ],
+                        )
+                      : Center(
+                          child: CircularProgressIndicator(),
+                        )));
+        });
   }
 
   void _updateSettings(Settings settings) {
@@ -102,128 +95,134 @@ class _SettingsPage extends State<SettingsPage> {
   }
 
   Widget _settingsGroup(String title, final List<Widget> children) {
-  
     final List<Widget> _children = [
       Text(title, style: TextStyle(fontSize: 25.0))
     ];
 
     return Card(
-      color: Colors.blue[200],
-      child: Column(
-        children: _children..addAll(children)
-      ),
+      color: Colors.white,
+      child: Column(children: _children..addAll(children)),
     );
   }
 
   Widget _messageSettings(Settings settings) {
     return _settingsGroup('Messages', [
       ListTile(
-        title: Text('Max Attempts'),
-        subtitle: Text('The maximum number of attempts a message should try to be sent when it keeps failing.'),
-        trailing: DropdownButton<int>(
-          value: settings.message.maxAttempts,
-          items: <int>[null, 1, 2, 3, 4, 5,]
-            .map((int value) =>
-            DropdownMenuItem<int>(
-              value: value,
-              child: Text(value == null ? 'Unlimited' : value.toString())
-            )
-          )?.toList(),
-          onChanged: (int value) {
-            settings.message.maxAttempts = value;
-            _settingsBloc.updateSettings(settings);
-          },
-        )
-      )
+          title: Text('Max Attempts'),
+          subtitle: Text(
+              'The maximum number of attempts a message should try to be sent when it keeps failing.'),
+          trailing: DropdownButton<int>(
+            value: settings.message.maxAttempts,
+            items: <int>[
+              null,
+              1,
+              2,
+              3,
+              4,
+              5,
+            ]
+                .map((int value) => DropdownMenuItem<int>(
+                    value: value,
+                    child:
+                        Text(value == null ? 'Unlimited' : value.toString())))
+                ?.toList(),
+            onChanged: (int value) {
+              settings.message.maxAttempts = value;
+              _settingsBloc.updateSettings(settings);
+            },
+          ))
     ]);
   }
 
   Widget _notificationSettings(Settings settings) =>
-    _settingsGroup('Notifications', [
-      ListTile(
-        title: Text('Enable Notifications'),
-        subtitle: Text('App wide notifications.'),
-        trailing: CupertinoSwitch(
-          activeColor: Colors.blue,
-          value: settings.system.shouldShowNotifications,
-          onChanged: (bool value){
-            settings.system.shouldShowNotifications = value;
-            _updateSettings(settings);
-          }
+      _settingsGroup('Notifications', [
+        ListTile(
+          title: Text('Enable Notifications'),
+          subtitle: Text('App wide notifications.'),
+          trailing: CupertinoSwitch(
+              activeColor: Colors.white,
+              value: settings.system.shouldShowNotifications,
+              onChanged: (bool value) {
+                settings.system.shouldShowNotifications = value;
+                _updateSettings(settings);
+              }),
         ),
-      ),
-      
-      ListTile(
-        title: Text('Successful Notifications'),
-        subtitle: Text('Notifies when the message sent successfully'),
-        enabled: settings.system.shouldShowNotifications,
-        trailing: CupertinoSwitch(
-          activeColor: settings.system.shouldShowNotifications ? Colors.blue : Colors.grey,
-          value: settings.system.shouldShowMessageSentNotifications,
-          dragStartBehavior: DragStartBehavior.start,
-          onChanged: !settings.system.shouldShowNotifications ? null :
-            (bool value) {
-              settings.system.shouldShowMessageSentNotifications = value;
-              _updateSettings(settings);
-            }
+        ListTile(
+          title: Text('Successful Notifications'),
+          subtitle: Text('Notifies when the message sent successfully'),
+          enabled: settings.system.shouldShowNotifications,
+          trailing: CupertinoSwitch(
+              activeColor: settings.system.shouldShowNotifications
+                  ? Colors.white
+                  : Colors.grey,
+              value: settings.system.shouldShowMessageSentNotifications,
+              dragStartBehavior: DragStartBehavior.start,
+              onChanged: !settings.system.shouldShowNotifications
+                  ? null
+                  : (bool value) {
+                      settings.system.shouldShowMessageSentNotifications =
+                          value;
+                      _updateSettings(settings);
+                    }),
         ),
-      ),
-
-      ListTile(
-        title: Text('Failed Notifications'),
-        subtitle: Text('Notifies when the message sending failed'),
-        enabled: settings.system.shouldShowNotifications,
-        trailing: CupertinoSwitch(
-          activeColor: settings.system.shouldShowNotifications ? Colors.blue : Colors.grey,
-          value: settings.system.shouldShowMessageFailedNotifications,
-          dragStartBehavior: DragStartBehavior.start,
-          onChanged: !settings.system.shouldShowNotifications ? null :
-            (bool value){
-              settings.system.shouldShowMessageFailedNotifications = value;
-              _updateSettings(settings);
-            }
+        ListTile(
+          title: Text('Failed Notifications'),
+          subtitle: Text('Notifies when the message sending failed'),
+          enabled: settings.system.shouldShowNotifications,
+          trailing: CupertinoSwitch(
+              activeColor: settings.system.shouldShowNotifications
+                  ? Colors.white
+                  : Colors.grey,
+              value: settings.system.shouldShowMessageFailedNotifications,
+              dragStartBehavior: DragStartBehavior.start,
+              onChanged: !settings.system.shouldShowNotifications
+                  ? null
+                  : (bool value) {
+                      settings.system.shouldShowMessageFailedNotifications =
+                          value;
+                      _updateSettings(settings);
+                    }),
         ),
-      ),
-    ]); // end function
+      ]); // end function
 
   Widget _smsSettings(Settings settings) {
     return _settingsGroup('SMS', [
       ListTile(
-        title: Text('Max messages Per Message'),
-        subtitle: Text('The maximum number of messages that can be sent per single sms schedule.'),
-        trailing: DropdownButton<int>(
-          value: settings.sms.maxSmsCount,
-          items: <int>[1, 2, 3, 4,]
-            .map((int value) =>
-            DropdownMenuItem<int>(
-              value: value,
-              child: Text(value.toString())
-            )
-          )?.toList(),
-          onChanged: (int value) {
-            settings.sms.maxSmsCount = value;
-            _settingsBloc.updateSettings(settings);
-          },
-        )
-      ),
-
+          title: Text('Max messages Per Message'),
+          subtitle: Text(
+              'The maximum number of messages that can be sent per single sms schedule.'),
+          trailing: DropdownButton<int>(
+            value: settings.sms.maxSmsCount,
+            items: <int>[
+              1,
+              2,
+              3,
+              4,
+            ]
+                .map((int value) => DropdownMenuItem<int>(
+                    value: value, child: Text(value.toString())))
+                ?.toList(),
+            onChanged: (int value) {
+              settings.sms.maxSmsCount = value;
+              _settingsBloc.updateSettings(settings);
+            },
+          )),
       ListTile(
-        title: Text('Select sim card'),
-        subtitle: Text('The sim card to use when sending messages.'),
-        trailing: DropdownButton<SimCards>(
-          value: settings.sms.simcard,
-          items: _simcards.map((SimCard simcard) =>
-            DropdownMenuItem<SimCards>(
-              value: SimCards.values[simcard.slot - 1],
-              child: Text('Sim ' + simcard.slot.toString()),
-            )
-          )?.toList(),
-          onChanged: (SimCards value) {
-            settings.sms.simcard = value;
-            _settingsBloc.updateSettings(settings);
-          },
-        )
-      )
+          title: Text('Select sim card'),
+          subtitle: Text('The sim card to use when sending messages.'),
+          trailing: DropdownButton<SimCards>(
+            value: settings.sms.simcard,
+            items: _simcards
+                .map((SimCard simcard) => DropdownMenuItem<SimCards>(
+                      value: SimCards.values[simcard.slot - 1],
+                      child: Text('Sim ' + simcard.slot.toString()),
+                    ))
+                ?.toList(),
+            onChanged: (SimCards value) {
+              settings.sms.simcard = value;
+              _settingsBloc.updateSettings(settings);
+            },
+          ))
     ]);
   }
 
@@ -233,7 +232,6 @@ class _SettingsPage extends State<SettingsPage> {
     final simcards = await provider.getSimCards();
     setState(() => _simcards = simcards);
   }
-
 } // end of class
 
 enum PopUpMenuValues {

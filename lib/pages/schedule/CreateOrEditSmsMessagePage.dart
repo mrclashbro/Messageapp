@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -11,11 +10,7 @@ import 'package:message_app/providers/DateTimeFormator.dart';
 import 'package:message_app/providers/DialogProvider.dart';
 import 'package:message_app/providers/SettingsProvider.dart';
 
-
-enum MessageMode {
-  create,
-  edit
-}
+enum MessageMode { create, edit }
 
 class CreateOrEditSmsMessagePage extends StatefulWidget {
   final MessageMode messageMode;
@@ -26,13 +21,14 @@ class CreateOrEditSmsMessagePage extends StatefulWidget {
   const CreateOrEditSmsMessagePage(this.messageMode, [this.message]);
 
   @override
-  _CreateOrEditSmsMessagePageState createState() => _CreateOrEditSmsMessagePageState();
+  _CreateOrEditSmsMessagePageState createState() =>
+      _CreateOrEditSmsMessagePageState();
 }
 
-class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage> {
-
+class _CreateOrEditSmsMessagePageState
+    extends State<CreateOrEditSmsMessagePage> {
   final _contactPicker = ContactPicker();
-  final _messagesBloc = MessageBloc() ;
+  final _messagesBloc = MessageBloc();
   Settings _settings = SettingsProvider.getDefaultSettings();
   DateTime _date;
   TimeOfDay _time;
@@ -47,20 +43,21 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
   String _timeError;
   String _messageError;
 
-
   @override
-  void initState() { 
+  void initState() {
     super.initState();
 
     if (widget.messageMode == MessageMode.edit) {
       _phoneNumberCtrl.text = widget.message.endpoint;
-      _dateCtrl.text = DateTimeFormator.formatDate(DateTime.fromMillisecondsSinceEpoch(widget.message.executedAt));
-      _timeCtrl.text = DateTimeFormator.formatTime(TimeOfDay.fromDateTime(DateTime.fromMillisecondsSinceEpoch(widget.message.executedAt)));
+      _dateCtrl.text = DateTimeFormator.formatDate(
+          DateTime.fromMillisecondsSinceEpoch(widget.message.executedAt));
+      _timeCtrl.text = DateTimeFormator.formatTime(TimeOfDay.fromDateTime(
+          DateTime.fromMillisecondsSinceEpoch(widget.message.executedAt)));
       _messageCtrl.text = widget.message.content;
       _date = DateTime.fromMillisecondsSinceEpoch(widget.message.executedAt);
-      _time = TimeOfDay.fromDateTime(DateTime.fromMillisecondsSinceEpoch(widget.message.executedAt));
-    }
-    else {
+      _time = TimeOfDay.fromDateTime(
+          DateTime.fromMillisecondsSinceEpoch(widget.message.executedAt));
+    } else {
       _phoneNumberCtrl.text = '';
       _dateCtrl.text = '';
       _timeCtrl.text = '';
@@ -77,8 +74,9 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
   }
 
   void _loadSettings() async {
-    final Settings settings = await SettingsProvider.getInstance().getSettings();
-    setState( () => _settings = settings );
+    final Settings settings =
+        await SettingsProvider.getInstance().getSettings();
+    setState(() => _settings = settings);
   }
 
   @override
@@ -90,115 +88,114 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[200],
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text((widget.messageMode == MessageMode.edit ? 'Edit' : 'Create New') + ' Message'),
+        title: Text(
+            (widget.messageMode == MessageMode.edit ? 'Edit' : 'Create New') +
+                ' Message'),
       ),
-
       body: Padding(
-        padding: EdgeInsets.only(left: 10, right: 10, top: 15, bottom: 15),
-        child: ListView(
-          children: <Widget>[
-            TextFormField(
-              controller: _phoneNumberCtrl,
-              inputFormatters: [
-                WhitelistingTextInputFormatter(RegExp(r"^[+]?\d*$")) // don't allow any input
-              ],
-              maxLength: 15,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: 'Phone Number',
-                labelText: 'Phone Number',
-                errorText: _phoneNumberError,
-                icon: Icon(Icons.contact_phone_outlined),
-                suffixIcon: GestureDetector(
-                  onTap: () async {
-                    final Contact contact = await _contactPicker.selectContact();
-                   // String number
-                    setState(() => _phoneNumberCtrl.text = contact.phoneNumber.number.toString());
-                  },
-                  child: Icon(Icons.person_add_alt)
-                )
+          padding: EdgeInsets.only(left: 10, right: 10, top: 15, bottom: 15),
+          child: ListView(
+            children: <Widget>[
+              TextFormField(
+                controller: _phoneNumberCtrl,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                      RegExp(r"^[+]?\d*$")) // prohibits input
+                ],
+                maxLength: 15,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                    hintText: 'Phone Number',
+                    labelText: 'Phone Number',
+                    errorText: _phoneNumberError,
+                    icon: Icon(Icons.contact_phone_outlined),
+                    suffixIcon: GestureDetector(
+                        onTap: () async {
+                          final Contact contact =
+                              await _contactPicker.selectContact();
+                          // String number
+                          setState(() => _phoneNumberCtrl.text =
+                              contact.phoneNumber.number.toString());
+                        },
+                        child: Icon(Icons.person_add_alt))),
               ),
-            ),
-            
-            TextFormField(
-              controller: _messageCtrl,
-              maxLines: null,
-              maxLength: _settings.sms.maxSmsCount * SmsSettings.maxSmsLength,
-              keyboardType: TextInputType.multiline,
-              decoration: InputDecoration(
-                errorText: _messageError,
-                labelText: 'Message',
-                icon: Icon(Icons.sms_sharp)
+              TextFormField(
+                controller: _messageCtrl,
+                maxLines: null,
+                maxLength: _settings.sms.maxSmsCount * SmsSettings.maxSmsLength,
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                    errorText: _messageError,
+                    labelText: 'Message',
+                    icon: Icon(Icons.sms_sharp)),
               ),
-            ),
-            
-            TextFormField(
-              controller: _dateCtrl,
-              inputFormatters: [
-                BlacklistingTextInputFormatter(RegExp(r".*")) // don't allow any input
-              ],
-              keyboardType: TextInputType.datetime,
-              decoration: InputDecoration(
-                labelText: 'Date',
-                errorText: _dateError,
-                icon: Icon(Icons.calendar_today_sharp),
-                suffixIcon: GestureDetector(
-                  child: Icon(Icons.more_sharp),
-                  onTap: () async {
-                    final DateTime date = await showDatePicker(
-                      context: context,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(Duration(days: 30 * 12* 2)),
-                      initialDate: DateTime.now()
-                    );
-                    _date = date;
-                    setState(() {
-                      _dateCtrl.text = DateTimeFormator.formatDate(date);
-                    });
-                  },
-                )
+              TextFormField(
+                controller: _dateCtrl,
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(
+                      RegExp(r".*")) // prohibits any input
+                ],
+                keyboardType: TextInputType.datetime,
+                decoration: InputDecoration(
+                    labelText: 'Date',
+                    errorText: _dateError,
+                    icon: Icon(Icons.calendar_today_sharp),
+                    suffixIcon: GestureDetector(
+                      child: Icon(Icons.more_sharp),
+                      onTap: () async {
+                        final DateTime date = await showDatePicker(
+                            context: context,
+                            firstDate: DateTime.now(),
+                            lastDate:
+                                DateTime.now().add(Duration(days: 30 * 12 * 2)),
+                            initialDate: DateTime.now());
+                        _date = date;
+                        setState(() {
+                          _dateCtrl.text = DateTimeFormator.formatDate(date);
+                        });
+                      },
+                    )),
               ),
-            ),
-
-            TextFormField(
-              
-              controller: _timeCtrl,
-              inputFormatters: [
-                BlacklistingTextInputFormatter(RegExp(r".*"))
-              ],
-              keyboardType: TextInputType.datetime,
-              decoration: InputDecoration(
-                labelText: 'Time',
-                errorText: _timeError,
-                icon: Icon(Icons.access_time),
-                suffixIcon: GestureDetector(
-                  child: Icon(Icons.more_horiz),
-                  onTap: () async {
-                    final TimeOfDay time = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.fromDateTime(DateTime.now().add(Duration(minutes: 0)))
-                    );
-                    _time = time;
-                    setState(() {
-                      _timeCtrl.text = _time.format(context);
-                    });
-                  },
-                )
+              TextFormField(
+                controller: _timeCtrl,
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r".*"))
+                ],
+                keyboardType: TextInputType.datetime,
+                decoration: InputDecoration(
+                    labelText: 'Time',
+                    errorText: _timeError,
+                    icon: Icon(Icons.access_time),
+                    suffixIcon: GestureDetector(
+                      child: Icon(Icons.more_horiz),
+                      onTap: () async {
+                        final TimeOfDay time = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.fromDateTime(
+                                DateTime.now().add(Duration(minutes: 0))));
+                        _time = time;
+                        setState(() {
+                          _timeCtrl.text = _time.format(context);
+                        });
+                      },
+                    )),
               ),
-            ),
-          ],
-        )
-      ),
-
+            ],
+          )),
       floatingActionButton: FloatingActionButton(
         child: Icon(
-          widget.messageMode == MessageMode.create ? Icons.create : Icons.edit,
-          color: Colors.white
-        ),
-        onPressed: !_validate() ? null : () => widget.messageMode == MessageMode.edit ? _onEditMessage() : _onCreateMessage(),
-        backgroundColor: _validate() ? Colors.blueAccent : Colors.grey,
+            widget.messageMode == MessageMode.create
+                ? Icons.create
+                : Icons.edit,
+            color: Colors.white),
+        onPressed: !_validate()
+            ? null
+            : () => widget.messageMode == MessageMode.edit
+                ? _onEditMessage()
+                : _onCreateMessage(),
+        backgroundColor: _validate() ? Colors.redAccent : Colors.red,
       ),
     );
   }
@@ -234,46 +231,40 @@ class _CreateOrEditSmsMessagePageState extends State<CreateOrEditSmsMessagePage>
     return status;
   }
 
-  /// Creates a message based on the form (user input).
-  Message _getFinalMessage() =>
-    Message(
+  /// Create a message based on user input.
+  Message _getFinalMessage() => Message(
       id: widget?.message?.id,
       content: _messageCtrl.text,
-      createdAt: widget?.message?.createdAt ?? DateTime.now().millisecondsSinceEpoch,
+      createdAt:
+          widget?.message?.createdAt ?? DateTime.now().millisecondsSinceEpoch,
       attempts: widget?.message?.attempts ?? 0,
       endpoint: _phoneNumberCtrl.text,
       driver: widget?.message?.driver ?? MessageDriver.SMS,
       status: widget?.message?.status ?? MessageStatus.PENDING,
       isArchived: widget?.message?.isArchived ?? false,
-      executedAt: DateTime(
-        _date.year, _date.month, _date.day,
-        _time.hour, _time.minute
-      ).millisecondsSinceEpoch
-    );
+      executedAt:
+          DateTime(_date.year, _date.month, _date.day, _time.hour, _time.minute)
+              .millisecondsSinceEpoch);
 
   void _onEditMessage() async {
     if (await _messagesBloc.updateMessage(_getFinalMessage())) {
       Navigator.pop(context);
-    }
-    else {
+    } else {
       await DialogProvider.showMessage(
-        context: context,
-        title: Icon(Icons.error),
-        content: Text('Error updating message.')
-      );
+          context: context,
+          title: Icon(Icons.error),
+          content: Text('Error updating message.'));
     }
   }
 
   void _onCreateMessage() async {
     if (await _messagesBloc.addMessage(_getFinalMessage())) {
       Navigator.pop(context);
-    }
-    else {
+    } else {
       await DialogProvider.showMessage(
-        context: context,
-        title: Icon(Icons.error),
-        content: Text('Error creating message.')
-      );
+          context: context,
+          title: Icon(Icons.error),
+          content: Text('Error creating message.'));
     }
   }
 }

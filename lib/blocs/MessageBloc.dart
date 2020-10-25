@@ -1,9 +1,7 @@
-
 import 'dart:async';
 
 import 'package:message_app/models/Message.dart';
 import 'package:message_app/providers/MessageProvider.dart';
-
 
 /// Message Bloc.
 
@@ -14,10 +12,9 @@ class MessageBloc {
 
   Stream get stream => _ctrl.stream;
 
-
   void dispose() {
     _ctrl.close();
-    //_mp.dispose(); // since MessageProvider is a singleton. it should only be disposed once, globally. 
+    //_mp.dispose(); // since MessageProvider is a singleton. it should only be disposed once, globally.
   }
 
   void loadMessages({MessageStatus status, int count}) async {
@@ -49,7 +46,7 @@ class MessageBloc {
     for (int i = 0; i < _list.length; ++i)
       // if message already exists, then just update the message in the list,
       // and emit the list as is (without any new elements).
-      if (_list[i].id == message.id){
+      if (_list[i].id == message.id) {
         _list[i] = message;
         _ctrl.sink.add(_list);
         return r;

@@ -6,17 +6,14 @@ import 'pages/schedule/SchedulePage.dart';
 
 void main() => runApp(MyApp());
 
-
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
-
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
-  final String _appName = 'Msg scheduler';
+  final String _appName = 'Love Share';
   Widget _home;
-
 
   _MyAppState();
 
@@ -43,22 +40,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return true;
   }
 
- 
-
-  
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: _appName,
       theme: ThemeData(
-        backgroundColor: Colors.blue[300],
-        primarySwatch: Colors.blue,
-        accentColor: Colors.indigo[900],
+        backgroundColor: Colors.red[300],
+        primarySwatch: Colors.red,
+        accentColor: Colors.redAccent[900],
       ),
       home: _home,
-
     );
   }
 }
-

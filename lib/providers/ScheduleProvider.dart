@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:message_app/models/Message.dart';
@@ -7,21 +6,22 @@ import 'package:message_app/providers/MessageProvider.dart';
 import 'package:message_app/providers/SettingsProvider.dart';
 import 'package:sms/sms.dart';
 
-
 ///
 class ScheduleProvider {
-
   Timer _timer;
   final StreamController<Message> _ctrlMsg = StreamController();
   final StreamController<List<Message>> _ctrlMsgs = StreamController();
   StreamSubscription _subMsg;
   StreamSubscription _subMsgs;
 
-
   /// Constructs a sheduler using the given [onMessageProcessed] and [onScheduleProcessed] listeners.
-  ScheduleProvider({dynamic Function(Message) onMessageProcessed, dynamic Function(List<Message>) onScheduleProcessed}) {
-    if (onMessageProcessed != null) this.onMessageProcessed = onMessageProcessed;
-    if (onScheduleProcessed != null) this.onScheduleProcessed = onScheduleProcessed;
+  ScheduleProvider(
+      {dynamic Function(Message) onMessageProcessed,
+      dynamic Function(List<Message>) onScheduleProcessed}) {
+    if (onMessageProcessed != null)
+      this.onMessageProcessed = onMessageProcessed;
+    if (onScheduleProcessed != null)
+      this.onScheduleProcessed = onScheduleProcessed;
   }
 
   /// Starts executing the schedule periodically according to the given [duration].
@@ -40,7 +40,6 @@ class ScheduleProvider {
     _subMsgs?.pause();
   }
 
-
   /// Sets the callback to be invoked whenever a single message has been processed.
   set onMessageProcessed(Function(Message) onData) {
     assert(onData != null);
@@ -54,12 +53,11 @@ class ScheduleProvider {
     assert(onDone != null);
 
     _subMsgs?.cancel();
-    _subMsgs = _ctrlMsgs.stream.listen((List<Message> messages) => onDone(messages));
-    
+    _subMsgs =
+        _ctrlMsgs.stream.listen((List<Message> messages) => onDone(messages));
   }
 
-
-  /// Frees the resources allocated with this object. Making the object un-usable.
+  /// Frees the resources allocated with this object. Make the object un-usable.
   void dispose() {
     _timer.cancel();
     _subMsg?.cancel();
@@ -70,56 +68,48 @@ class ScheduleProvider {
 
   void _processSms(Message message) async {
     final provider = SimCardsProvider();
-    final int simSlot = (await SettingsProvider.getInstance().getSettings()).sms.simcard.index;
+    final int simSlot =
+        (await SettingsProvider.getInstance().getSettings()).sms.simcard.index;
     final SimCard simToUse = (await provider.getSimCards())[simSlot];
-   // final Settings settings = await SettingsProvider.getInstance().getSettings();
 
     final sender = SmsSender();
-    final SmsMessage smsMessage = SmsMessage(message.endpoint, message.content, id: message.id);
+    final SmsMessage smsMessage =
+        SmsMessage(message.endpoint, message.content, id: message.id);
 
     smsMessage.onStateChanged.listen((SmsMessageState state) async {
-      
       if (state == SmsMessageState.Sent) {
         message.status = MessageStatus.SENT;
         message.attempts++;
-        
+
         _ctrlMsg.sink.add(message);
-      }
-      else if (state == SmsMessageState.Fail) {
+      } else if (state == SmsMessageState.Fail) {
         message.status = MessageStatus.FAILED;
         message.attempts++;
 
         _ctrlMsg.sink.add(message);
       }
 
-      // I might use this guy later.
-      else if (state == SmsMessageState.Delivered) {
-        
-      }
+      // might use this later.
+      else if (state == SmsMessageState.Delivered) {}
     });
 
     await sender.sendSms(smsMessage, simCard: simToUse);
   }
 
   void _processSchedule() async {
-    
-    final Settings settings = await SettingsProvider.getInstance().getSettings();
+    final Settings settings =
+        await SettingsProvider.getInstance().getSettings();
     final messages = await MessageProvider.getInstance().getMessages();
 
     messages
-    .takeWhile((Message message) =>
-      (
-        message.status == MessageStatus.PENDING
-        ||
-        (message.status == MessageStatus.FAILED &&
-          (settings.message.maxAttempts == null || message.attempts < settings.message.maxAttempts)
-        )
-      )
-      &&
-      DateTime.now().millisecondsSinceEpoch >= message.executedAt
-    )
-    .forEach((Message message) {
-      switch (message.driver){
+        .takeWhile((Message message) =>
+            (message.status == MessageStatus.PENDING ||
+                (message.status == MessageStatus.FAILED &&
+                    (settings.message.maxAttempts == null ||
+                        message.attempts < settings.message.maxAttempts))) &&
+            DateTime.now().millisecondsSinceEpoch >= message.executedAt)
+        .forEach((Message message) {
+      switch (message.driver) {
         case MessageDriver.SMS:
           _processSms(message);
           break;
@@ -129,7 +119,6 @@ class ScheduleProvider {
       }
     });
 
-    if (messages.length > 0)
-      _ctrlMsgs.sink.add(messages);
+    if (messages.length > 0) _ctrlMsgs.sink.add(messages);
   }
 }
