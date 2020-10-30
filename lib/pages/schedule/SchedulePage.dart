@@ -10,7 +10,9 @@ import 'package:message_app/pages/schedule/CreateOrEditSmsMessagePage.dart';
 import 'package:message_app/pages/settings/SettingsPage.dart';
 import 'package:message_app/providers/DialogProvider.dart';
 import 'package:message_app/providers/ScheduleProvider.dart';
+import 'package:sms/sms.dart';
 import './Schedule.dart';
+import './sms.dart';
 
 class SchedulePage extends StatefulWidget {
   SchedulePage({Key key, this.title}) : super(key: key);
@@ -73,88 +75,107 @@ class _SchedulePageState extends State<SchedulePage>
     debugPrint('SchedulePage.build()');
 
     return Scaffold(
-      appBar: AppBar(
-          title: Text(widget.title),
-          actions: <Widget>[
-            PopupMenuButton<PopUpMenuValues>(
-              tooltip: '',
-              onSelected: _onPopupSelected,
-              itemBuilder: (BuildContext context) =>
-                  <PopupMenuEntry<PopUpMenuValues>>[
-                PopupMenuItem<PopUpMenuValues>(
-                  enabled: _messages != null && _messages.isNotEmpty,
-                  value: PopUpMenuValues.deleteAll,
-                  child: ListTile(
-                      leading: Icon(Icons.delete_forever),
-                      title: Text('Delete all messages',
-                          style: TextStyle(
-                              color: _messages != null && _messages.isNotEmpty
-                                  ? Colors.black87
-                                  : Colors.grey))),
-                ),
-                const PopupMenuItem<PopUpMenuValues>(
-                  value: PopUpMenuValues.refreshMessages,
-                  child: ListTile(
-                      leading: Icon(Icons.refresh),
-                      title: Text('Refresh messages')),
-                ),
-                const PopupMenuItem<PopUpMenuValues>(
-                  value: PopUpMenuValues.appSettings,
-                  child: ListTile(
-                      leading: Icon(Icons.settings), title: Text('Settings')),
-                ),
+        appBar: AppBar(
+            title: Text(widget.title),
+            actions: <Widget>[
+              PopupMenuButton<PopUpMenuValues>(
+                tooltip: '',
+                onSelected: _onPopupSelected,
+                itemBuilder: (BuildContext context) =>
+                    <PopupMenuEntry<PopUpMenuValues>>[
+                  PopupMenuItem<PopUpMenuValues>(
+                    enabled: _messages != null && _messages.isNotEmpty,
+                    value: PopUpMenuValues.deleteAll,
+                    child: ListTile(
+                        leading: Icon(Icons.delete_forever),
+                        title: Text('Delete all messages',
+                            style: TextStyle(
+                                color: _messages != null && _messages.isNotEmpty
+                                    ? Colors.black87
+                                    : Colors.grey))),
+                  ),
+                  const PopupMenuItem<PopUpMenuValues>(
+                    value: PopUpMenuValues.refreshMessages,
+                    child: ListTile(
+                        leading: Icon(Icons.refresh),
+                        title: Text('Refresh messages')),
+                  ),
+                  const PopupMenuItem<PopUpMenuValues>(
+                    value: PopUpMenuValues.appSettings,
+                    child: ListTile(
+                        leading: Icon(Icons.settings), title: Text('Settings')),
+                  ),
+                ],
+              )
+            ],
+            bottom: TabBar(
+              indicatorColor: Colors.deepOrange,
+              labelColor: Colors.orange,
+              unselectedLabelColor: Colors.white,
+              controller: _tabController,
+              tabs: const <Widget>[
+                Tab(icon: Icon(Icons.all_inbox, size: _iconSize)),
+                Tab(icon: Icon(Icons.schedule, size: _iconSize)),
+                Tab(icon: Icon(Icons.mark_chat_read, size: _iconSize)),
+                Tab(icon: Icon(Icons.error, size: _iconSize)),
               ],
-            )
-          ],
-          bottom: TabBar(
-            indicatorColor: Colors.deepOrange,
-            labelColor: Colors.orange,
-            unselectedLabelColor: Colors.white,
-            controller: _tabController,
-            tabs: const <Widget>[
-              Tab(icon: Icon(Icons.all_inbox, size: _iconSize)),
-              Tab(icon: Icon(Icons.schedule, size: _iconSize)),
-              Tab(icon: Icon(Icons.mark_chat_read, size: _iconSize)),
-              Tab(icon: Icon(Icons.error, size: _iconSize)),
-            ],
-          )),
-      backgroundColor: Colors.white,
-      body: StreamBuilder<List<Message>>(
-        stream: _messageBloc.stream,
-        initialData: null,
-        builder: (BuildContext context, AsyncSnapshot<List<Message>> snapshot) {
-          final List<Message> all = snapshot.data
-              ?.takeWhile((msg) => !msg.isArchived)
-              ?.toList(); // gets non-archived messages.
-          final pending = all
-              ?.takeWhile((msg) => msg.status == MessageStatus.PENDING)
-              ?.toList();
-          final failed = all
-              ?.takeWhile((msg) => msg.status == MessageStatus.FAILED)
-              ?.toList();
-          final sent = all
-              ?.takeWhile((msg) => msg.status == MessageStatus.SENT)
-              ?.toList();
+            )),
+        backgroundColor: Colors.white,
+        body: StreamBuilder<List<Message>>(
+          stream: _messageBloc.stream,
+          initialData: null,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Message>> snapshot) {
+            final List<Message> all = snapshot.data
+                ?.takeWhile((msg) => !msg.isArchived)
+                ?.toList(); // gets non-archived messages.
+            final pending = all
+                ?.takeWhile((msg) => msg.status == MessageStatus.PENDING)
+                ?.toList();
+            final failed = all
+                ?.takeWhile((msg) => msg.status == MessageStatus.FAILED)
+                ?.toList();
+            final sent = all
+                ?.takeWhile((msg) => msg.status == MessageStatus.SENT)
+                ?.toList();
 
-          _messages = snapshot.data; // take all messages.
+            _messages = snapshot.data; // take all messages.
 
-          return TabBarView(
-            controller: _tabController,
+            return TabBarView(
+              controller: _tabController,
+              children: <Widget>[
+                Schedule(all, () => _refreshMessages()),
+                Schedule(pending, () => _refreshMessages()),
+                Schedule(sent, () => _refreshMessages()),
+                Schedule(failed, () => _refreshMessages()),
+              ],
+            );
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Schedule(all, () => _refreshMessages()),
-              Schedule(pending, () => _refreshMessages()),
-              Schedule(sent, () => _refreshMessages()),
-              Schedule(failed, () => _refreshMessages()),
+              FloatingActionButton(
+                heroTag: null,
+                onPressed: _onCreateMessage,
+                child: Icon(Icons.add, color: Colors.white),
+                backgroundColor: Colors.redAccent,
+              ),
+              FloatingActionButton(
+                heroTag: null,
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SendSms()));
+                },
+                child: Icon(Icons.send, color: Colors.white),
+                backgroundColor: Colors.redAccent,
+              )
             ],
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onCreateMessage,
-        child: Icon(Icons.add, color: Colors.white),
-        backgroundColor: Colors.red,
-      ),
-    );
+          ),
+        ));
   }
 
   void _onPopupSelected(PopUpMenuValues value) {

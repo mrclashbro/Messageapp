@@ -9,6 +9,7 @@ import 'package:message_app/models/Settings.dart';
 import 'package:message_app/providers/DateTimeFormator.dart';
 import 'package:message_app/providers/DialogProvider.dart';
 import 'package:message_app/providers/SettingsProvider.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 
 enum MessageMode { create, edit }
 
@@ -267,4 +268,6 @@ class _CreateOrEditSmsMessagePageState
           content: Text('Error creating message.'));
     }
   }
+
+ 
 }
